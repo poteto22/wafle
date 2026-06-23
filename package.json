@@ -1,0 +1,13 @@
+{
+  "name": "waffle-chart",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Election Waffle Chart Dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
