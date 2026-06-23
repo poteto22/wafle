@@ -218,11 +218,14 @@ body {
   mask-repeat: no-repeat;
   mask-position: center;
   mask-size: contain;
+  
+  /* Slight soft feathered edge (ambient shadow around the mask outline) */
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08)) drop-shadow(0 0.5px 1.5px rgba(0, 0, 0, 0.04));
 }
 
 /* Hover cell effect in TV mode */
 .cell:hover {
-  filter: brightness(0.88);
+  filter: brightness(0.88) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.12));
 }
 
 /* Waffle Silent-update flash animation */
