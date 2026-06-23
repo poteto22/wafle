@@ -1,8 +1,8 @@
 /* Design Tokens & Theme Variables */
 :root {
-  --bg-dark: #f8fafc;
-  --bg-card: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(15, 23, 42, 0.06);
+  --bg-dark: transparent;
+  --bg-card: rgba(255, 255, 255, 0.3);
+  --border-color: rgba(255, 255, 255, 0.4);
   --text-main: #0f172a;
   --text-muted: #64748b;
   --accent-color: #0284c7;
@@ -29,7 +29,7 @@ body.actual-mode {
 }
 
 body {
-  background: radial-gradient(circle at 50% 0%, #ffffff 0%, #cbd5e1 100%);
+  background: transparent !important;
   color: var(--text-main);
   font-family: 'Kanit', 'Inter', sans-serif;
   height: 100vh;
@@ -49,14 +49,13 @@ body {
   aspect-ratio: 16 / 9;
   
   background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
   border: 1px solid var(--border-color);
   border-radius: 20px;
   box-shadow: 
-    0 10px 40px -10px rgba(15, 23, 42, 0.1),
-    0 1px 3px rgba(15, 23, 42, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    0 8px 32px 0 rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
   
   display: flex;
   flex-direction: column;
@@ -179,8 +178,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(0, 0, 0, 0.005);
-  border: 1px solid rgba(0, 0, 0, 0.02);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 16px;
   padding: 20px;
 }
@@ -258,8 +257,8 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: rgba(0, 0, 0, 0.005);
-  border: 1px solid rgba(0, 0, 0, 0.02);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 16px;
   padding: 3vh 2vw;
   overflow: hidden;
@@ -310,11 +309,11 @@ body {
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(0, 0, 0, 0.02);
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   transition: all 0.3s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.01);
 }
 
 .party-item:hover {
