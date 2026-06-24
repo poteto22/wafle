@@ -44,17 +44,23 @@ function initializeGrid() {
   // Generate all 50 cell positions across 3 concentric rows
   const cells = [];
   const rowsConfig = [
-    { seats: 13, radius: 46 }, // Inner row
-    { seats: 17, radius: 67 }, // Middle row
-    { seats: 20, radius: 88 }  // Outer row
+    { seats: 13, radius: 50 }, // Inner row
+    { seats: 17, radius: 71 }, // Middle row
+    { seats: 20, radius: 92 }  // Outer row
   ];
 
   rowsConfig.forEach((rowOpt, rowIndex) => {
     const K = rowOpt.seats;
     const R = rowOpt.radius;
     for (let i = 0; i < K; i++) {
-      // Angle goes from Math.PI (left, 180 deg) to 0 (right, 0 deg)
-      const angle = Math.PI - (i / (K - 1)) * Math.PI;
+      // ปรับแก้บรรทัด 56-57 เป็นแบบนี้:
+      const startDeg = 200; // มุมเริ่มต้นฝั่งซ้าย (ของเดิมคือ 180 ถ้าอยากให้โค้งลงล่างอีกให้ปรับเพิ่ม เช่น 190, 200)
+      const endDeg = -20;   // มุมสิ้นสุดฝั่งขวา  (ของเดิมคือ 0 ถ้าอยากให้โค้งลงล่างอีกให้ปรับลด เช่น -10, -20)
+
+      const startAngle = (startDeg * Math.PI) / 180;
+      const endAngle = (endDeg * Math.PI) / 180;
+const angle = startAngle - (i / (K - 1)) * (startAngle - endAngle);
+
       cells.push({
         rowIndex,
         seatIndex: i,
@@ -79,7 +85,7 @@ function initializeGrid() {
     // Convert polar coordinates to Cartesian percentages
     // Multiply by 1/1.8 to counteract aspect-ratio stretching
     const x = 50 + (1 / 1.8) * R * Math.cos(angle);
-    const y = 90 - R * Math.sin(angle);
+    const y = 60 - R * Math.sin(angle);
     
     const cell = document.createElement('div');
     cell.className = 'cell';
