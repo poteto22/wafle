@@ -34,19 +34,62 @@ document.addEventListener('DOMContentLoaded', () => {
   startCountdown();
 });
 
-// Create 50 cell elements
+// Create 50 cell elements arranged in a hemicycle (semicircular parliament layout)
 function initializeGrid() {
   waffleGrid.innerHTML = '';
-  for (let i = 0; i < 50; i++) {
+  
+  // Generate all 50 cell positions across 3 concentric rows
+  const cells = [];
+  const rowsConfig = [
+    { seats: 13, radius: 46 }, // Inner row
+    { seats: 17, radius: 67 }, // Middle row
+    { seats: 20, radius: 88 }  // Outer row
+  ];
+
+  rowsConfig.forEach((rowOpt, rowIndex) => {
+    const K = rowOpt.seats;
+    const R = rowOpt.radius;
+    for (let i = 0; i < K; i++) {
+      // Angle goes from Math.PI (left, 180 deg) to 0 (right, 0 deg)
+      const angle = Math.PI - (i / (K - 1)) * Math.PI;
+      cells.push({
+        rowIndex,
+        seatIndex: i,
+        angle,
+        radius: R
+      });
+    }
+  });
+
+  // Sort cells by angle descending (from left to right) so parties group as pie-slices/columns
+  cells.sort((a, b) => {
+    if (Math.abs(a.angle - b.angle) < 0.001) {
+      return b.radius - a.radius; // outer to inner
+    }
+    return b.angle - a.angle;
+  });
+
+  cells.forEach((cellData, index) => {
+    const angle = cellData.angle;
+    const R = cellData.radius;
+    
+    // Convert polar coordinates to Cartesian percentages
+    // Multiply by 1/1.8 to counteract aspect-ratio stretching
+    const x = 50 + (1 / 1.8) * R * Math.cos(angle);
+    const y = 90 - R * Math.sin(angle);
+    
     const cell = document.createElement('div');
     cell.className = 'cell';
-    cell.id = `cell-${i}`;
+    cell.id = `cell-${index}`;
+    cell.style.left = `${x}%`;
+    cell.style.top = `${y}%`;
+    
     // Initialize state cache
-    cellsState[i] = { party: 'ว่าง', color: '#cbd5e1' };
-    cell.style.backgroundColor = cellsState[i].color;
-    cell.style.setProperty('--cell-color', cellsState[i].color);
+    cellsState[index] = { party: 'ว่าง', color: '#cbd5e1', x, y };
+    cell.style.backgroundColor = cellsState[index].color;
+    cell.style.setProperty('--cell-color', cellsState[index].color);
     waffleGrid.appendChild(cell);
-  }
+  });
 }
 
 // Start countdown visual timer
@@ -169,7 +212,7 @@ function updateWaffleChart(data) {
       }, { once: true });
 
       // Save to state cache
-      cellsState[i] = newCell;
+      cellsState[i] = { ...prevCell, ...newCell };
     }
   }
 }
@@ -213,7 +256,6 @@ function updatePartyList(data) {
             <div class="party-stats">
               <span class="party-count" id="party-count-${index}">${party.count}</span>
               <span class="party-seats-label">ที่นั่ง</span>
-              <span class="party-percentage" id="party-pct-${index}">(${percentage}%)</span>
             </div>
           </div>
           <div class="party-progress-track">
@@ -231,12 +273,11 @@ function updatePartyList(data) {
     sortedData.forEach((party, index) => {
       const prevCount = partiesState[party.party];
       const countEl = document.getElementById('party-count-' + index);
-      const pctEl = document.getElementById('party-pct-' + index);
       const barEl = document.getElementById('party-bar-' + index);
       const nameEl = document.getElementById('party-name-' + index);
       const logoContainerEl = document.getElementById('party-logo-container-' + index);
 
-      if (countEl && pctEl && barEl) {
+      if (countEl && barEl) {
         const percentage = ((party.count / totalSeats) * 100).toFixed(1);
         
         // If the party at this rank has changed, update its name, logo, and bar color
@@ -262,7 +303,6 @@ function updatePartyList(data) {
           partiesState[party.party] = party.count;
         }
         
-        pctEl.textContent = `(${percentage}%)`;
         barEl.style.width = `${percentage}%`;
       }
     });

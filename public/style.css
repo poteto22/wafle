@@ -8,7 +8,7 @@
   --accent-color: #0284c7;
   
   /* TV Mode variables (Dynamic & scalable) */
-  --cell-size: clamp(35px, 8.2vh, 75px);
+  --cell-size: clamp(22px, 5.5vh, 44px);
   --cell-gap: clamp(8px, 1.6vh, 18px);
   --cell-radius: 50%;
 }
@@ -194,30 +194,23 @@ body {
 }
 
 .waffle-grid {
-  display: grid;
-  grid-template-columns: repeat(10, var(--cell-size));
-  grid-template-rows: repeat(5, var(--cell-size));
-  gap: var(--cell-gap);
-  padding: 10px;
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  aspect-ratio: 1.8 / 1;
   margin: auto;
 }
 
 /* Waffle Grid Cells */
 .cell {
   background-color: #cbd5e1; /* Neutral light gray empty color */
-  transition: background-color 0.4s ease, filter 0.2s ease;
+  transition: background-color 0.4s ease, filter 0.2s ease, left 0.6s ease, top 0.6s ease;
   cursor: pointer;
-  position: relative;
-  
-  /* Mask to half-body person pictogram shape */
-  -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27black%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%275.5%27%20r%3D%273.5%27%2F%3E%3Cpath%20d%3D%27M12%2011c-3.87%200-7%202.68-7%206v6h14v-6c0-3.32-3.13-6-7-6z%27%2F%3E%3C%2Fsvg%3E");
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: contain;
-  mask-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27black%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%275.5%27%20r%3D%273.5%27%2F%3E%3Cpath%20d%3D%27M12%2011c-3.87%200-7%202.68-7%206v6h14v-6c0-3.32-3.13-6-7-6z%27%2F%3E%3C%2Fsvg%3E");
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
+  position: absolute;
+  width: var(--cell-size);
+  height: var(--cell-size);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
   
   /* Colored drop shadow matching the party color, using color-mix for smooth opacity */
   filter: drop-shadow(0 2px 4px color-mix(in srgb, var(--cell-color, #cbd5e1) 35%, transparent))
@@ -233,16 +226,16 @@ body {
 /* Waffle Silent-update flash animation */
 @keyframes cell-flash {
   0% {
-    transform: scale(1);
+    transform: translate(-50%, -50%) scale(1);
     filter: brightness(1) drop-shadow(0 0 0 transparent);
   }
   25% {
-    transform: scale(1.18);
+    transform: translate(-50%, -50%) scale(1.18);
     filter: brightness(1.7) drop-shadow(0 0 15px var(--flash-color, #fff));
     z-index: 10;
   }
   100% {
-    transform: scale(1);
+    transform: translate(-50%, -50%) scale(1);
     filter: brightness(1) drop-shadow(0 0 0 transparent);
   }
 }
@@ -396,12 +389,6 @@ body {
   color: var(--text-muted);
 }
 
-.party-percentage {
-  font-size: clamp(0.75rem, 1.5vh, 0.95rem);
-  color: var(--text-muted);
-  font-family: 'Inter', sans-serif;
-  margin-left: 8px;
-}
 
 /* Party Progress Bar */
 .party-progress-track {
