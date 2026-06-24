@@ -445,8 +445,7 @@ async function showCandidateCard(partyName) {
         <div class="candidate-details">
           <div class="candidate-name-field">${c.candidateName}</div>
           <div class="candidate-meta-row">
-            <span class="candidate-area">เขตเลือกตั้ง: ${c.areaName}</span>
-            <span class="candidate-party-label">${c.partiesName}</span>
+            <span class="candidate-area">เขต${c.areaName}</span>
           </div>
           <div class="candidate-score-row">
             <span class="candidate-score-val">${Number(c.score).toLocaleString()} คะแนน</span>

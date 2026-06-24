@@ -724,8 +724,8 @@ body {
 .candidate-meta-row {
   display: flex;
   gap: 14px;
-  font-size: clamp(0.75rem, 1.5vh, 0.9rem);
-  color: var(--text-muted);
+  font-size: clamp(0.9rem, 1.8vh, 1.1rem);
+  color: rgba(0, 0, 0, 0.8);
   font-weight: 300;
 }
 
