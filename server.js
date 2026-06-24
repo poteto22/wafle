@@ -14,6 +14,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Serve party logos from src/image/
 app.use('/image', express.static(path.join(__dirname, 'src/image')));
 
+// Serve candidate photos from src/candidates/
+app.use('/candidates', express.static(path.join(__dirname, 'src/candidates')));
+
 // Proxy endpoint to bypass CORS issues in frontend browser fetch
 app.get('/api/waffle', async (req, res) => {
   try {

@@ -439,21 +439,28 @@ async function showCandidateCard(partyName) {
     }
 
     // Render candidate cards
-    popupBody.innerHTML = candidates.map(c => `
-      <div class="candidate-row-card">
-        <img class="candidate-avatar" src="${c.candidateImageUrl || 'https://asset-election.nationtv.tv/2026/candidates/default.png'}" alt="${c.candidateName}">
-        <div class="candidate-details">
-          <div class="candidate-name-field">${c.candidateName}</div>
-          <div class="candidate-meta-row">
-            <span class="candidate-area">เขต${c.areaName}</span>
-          </div>
-          <div class="candidate-score-row">
-            <span class="candidate-score-val">${Number(c.score).toLocaleString()} คะแนน</span>
-            <span class="candidate-score-pct">(${c.scorePercent}%)</span>
+    popupBody.innerHTML = candidates.map(c => {
+      // Extract only the filename from Windows/Unix path (supporting both 'pic' and 'candidateImageUrl' keys)
+      const imgPath = c.pic || c.candidateImageUrl;
+      const imgFilename = imgPath ? imgPath.split(/[\\/]/).pop() : 'default.png';
+      const localImgSrc = `/candidates/${encodeURIComponent(imgFilename)}`;
+      
+      return `
+        <div class="candidate-row-card">
+          <img class="candidate-avatar" src="${localImgSrc}" alt="${c.candidateName}" onerror="this.src='https://asset-election.nationtv.tv/2026/candidates/default.png'; this.onerror=null;">
+          <div class="candidate-details">
+            <div class="candidate-name-field">${c.candidateName}</div>
+            <div class="candidate-meta-row">
+              <span class="candidate-area">เขต${c.areaName}</span>
+            </div>
+            <div class="candidate-score-row">
+              <span class="candidate-score-val">${Number(c.score).toLocaleString()} คะแนน</span>
+              <span class="candidate-score-pct">(${c.scorePercent}%)</span>
+            </div>
           </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
   } catch (error) {
     console.error('Error fetching candidate data:', error);
