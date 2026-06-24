@@ -321,8 +321,8 @@ body {
 }
 
 .party-logo-container {
-  width: clamp(24px, 4vh, 36px);
-  height: clamp(24px, 4vh, 36px);
+  width: clamp(40px, 4vh, 60px);
+  height: clamp(40px, 4vh, 60px);
   border-radius: 50%;
   overflow: hidden;
   display: flex;
