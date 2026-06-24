@@ -35,6 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize fullscreen button functionality
   setupFullscreen();
+
+  // Initialize modal event listeners
+  setupModalListeners();
 });
 
 // Create 50 cell elements arranged in a hemicycle (semicircular parliament layout)
@@ -92,6 +95,14 @@ const angle = startAngle - (i / (K - 1)) * (startAngle - endAngle);
     cell.id = `cell-${index}`;
     cell.style.left = `${x}%`;
     cell.style.top = `${y}%`;
+    
+    // Add click handler to fetch and show candidate card popup
+    cell.addEventListener('click', () => {
+      const state = cellsState[index];
+      if (state && state.party && state.party !== 'ว่าง') {
+        showCandidateCard(state.party);
+      }
+    });
     
     // Initialize state cache
     cellsState[index] = { party: 'ว่าง', color: '#cbd5e1', x, y };
@@ -255,6 +266,15 @@ function updatePartyList(data) {
       itemEl.className = 'party-item';
       itemEl.id = `party-item-${index}`;
       
+      // Make the entire card item clickable to view candidates list
+      itemEl.style.cursor = 'pointer';
+      itemEl.addEventListener('click', () => {
+        const nameEl = document.getElementById(`party-name-${index}`);
+        if (nameEl) {
+          showCandidateCard(nameEl.textContent);
+        }
+      });
+      
       itemEl.innerHTML = `
         <div class="party-logo-container" id="party-logo-container-${index}">
           <img class="party-logo" src="/image/${encodeURIComponent(party.party)}.jpg" alt="${party.party}" onerror="handleLogoError(this, '${party.colorCode || '#cccccc'}')">
@@ -382,5 +402,81 @@ function setupFullscreen() {
       `;
       btn.title = "Enter Fullscreen";
     }
+  });
+}
+
+// Fetch and show candidate details popup card modal
+async function showCandidateCard(partyName) {
+  const modal = document.getElementById('popup-modal');
+  const popupBody = document.getElementById('popup-body');
+  const popupTitle = document.getElementById('popup-title');
+  const popupLogo = document.getElementById('popup-party-logo');
+
+  if (!modal || !popupBody || !popupTitle) return;
+
+  // Show modal in loading state
+  popupTitle.textContent = `ผู้สมัคร - ${partyName}`;
+  popupLogo.src = `/image/${encodeURIComponent(partyName)}.jpg`;
+  popupLogo.style.display = 'block';
+  popupBody.innerHTML = '<div class="popup-loading">กำลังโหลดข้อมูลผู้สมัคร...</div>';
+  modal.classList.remove('hidden');
+
+  try {
+    const response = await fetch('/api/getcard', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ partiesName: partyName })
+    });
+
+    if (!response.ok) throw new Error('Network response was not ok');
+    const candidates = await response.json();
+
+    if (!candidates || candidates.length === 0) {
+      popupBody.innerHTML = '<div class="popup-no-data">ไม่พบข้อมูลผู้สมัครสำหรับกลุ่มนี้</div>';
+      return;
+    }
+
+    // Render candidate cards
+    popupBody.innerHTML = candidates.map(c => `
+      <div class="candidate-row-card">
+        <img class="candidate-avatar" src="${c.candidateImageUrl || 'https://asset-election.nationtv.tv/2026/candidates/default.png'}" alt="${c.candidateName}">
+        <div class="candidate-details">
+          <div class="candidate-name-field">${c.candidateName}</div>
+          <div class="candidate-meta-row">
+            <span class="candidate-area">เขตเลือกตั้ง: ${c.areaName}</span>
+            <span class="candidate-party-label">${c.partiesName}</span>
+          </div>
+          <div class="candidate-score-row">
+            <span class="candidate-score-val">${Number(c.score).toLocaleString()} คะแนน</span>
+            <span class="candidate-score-pct">(${c.scorePercent}%)</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+  } catch (error) {
+    console.error('Error fetching candidate data:', error);
+    popupBody.innerHTML = '<div class="popup-error">เกิดข้อผิดพลาดในการโหลดข้อมูล</div>';
+  }
+}
+
+// Setup close modal event listeners
+function setupModalListeners() {
+  const modal = document.getElementById('popup-modal');
+  const overlay = document.getElementById('popup-overlay');
+  const closeBtn = document.getElementById('popup-close-btn');
+
+  if (!modal) return;
+
+  const closeModal = () => modal.classList.add('hidden');
+
+  if (overlay) overlay.addEventListener('click', closeModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  
+  // Close on ESC key press
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
   });
 }

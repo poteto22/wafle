@@ -41,6 +41,21 @@
 
   </div>
 
+  <!-- Candidate Cards Popup Modal -->
+  <div id="popup-modal" class="popup-modal hidden">
+    <div class="popup-overlay" id="popup-overlay"></div>
+    <div class="popup-content">
+      <button class="popup-close-btn" id="popup-close-btn">&times;</button>
+      <div class="popup-header">
+        <img class="popup-party-logo" id="popup-party-logo" src="" alt="Party Logo" onerror="this.style.display='none'">
+        <h3 class="popup-title" id="popup-title">รายชื่อผู้สมัคร</h3>
+      </div>
+      <div class="popup-body" id="popup-body">
+        <!-- Candidate list items will be injected here -->
+      </div>
+    </div>
+  </div>
+
   <!-- Floating Fullscreen Button -->
   <button id="fullscreen-btn" class="fullscreen-btn" title="Enter Fullscreen">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
