@@ -59,7 +59,7 @@ body {
   
   display: flex;
   flex-direction: column;
-  padding: 2.5vh 2.5vw;
+  padding: 2.5vh 1.5vw;
   gap: 2vh;
 }
 
@@ -174,7 +174,7 @@ body {
 
 /* Left side: Waffle Chart Card */
 .chart-section {
-  width: 70%;
+  width: 65%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -219,13 +219,15 @@ body {
   mask-position: center;
   mask-size: contain;
   
-  /* Slight soft feathered edge (ambient shadow around the mask outline) */
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08)) drop-shadow(0 0.5px 1.5px rgba(0, 0, 0, 0.04));
+  /* Colored drop shadow matching the party color, using color-mix for smooth opacity */
+  filter: drop-shadow(0 2px 4px color-mix(in srgb, var(--cell-color, #cbd5e1) 35%, transparent))
+          drop-shadow(0 0.5px 1.5px color-mix(in srgb, var(--cell-color, #cbd5e1) 15%, transparent));
 }
 
 /* Hover cell effect in TV mode */
 .cell:hover {
-  filter: brightness(0.88) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.12));
+  filter: brightness(0.88) 
+          drop-shadow(0 4px 8px color-mix(in srgb, var(--cell-color, #cbd5e1) 50%, transparent));
 }
 
 /* Waffle Silent-update flash animation */
@@ -251,7 +253,7 @@ body {
 
 /* Right side: Party List Card */
 .list-section {
-  width: 30%;
+  width: 35%;
   display: flex;
   flex-direction: column;
 }
@@ -263,7 +265,7 @@ body {
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 16px;
-  padding: 3vh 2vw;
+  padding: 3vh 1.2vw;
   overflow: hidden;
 }
 
@@ -325,12 +327,30 @@ body {
   transform: translateX(4px);
 }
 
-.party-color-dot {
-  width: clamp(12px, 2vh, 18px);
-  height: clamp(12px, 2vh, 18px);
+.party-logo-container {
+  width: clamp(24px, 4vh, 36px);
+  height: clamp(24px, 4vh, 36px);
   border-radius: 50%;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.25);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
   flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.party-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.party-logo-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 
 .party-info {
@@ -352,13 +372,16 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 180px;
+  flex: 1;
+  min-width: 0;
+  margin-right: 8px;
 }
 
 .party-stats {
   display: flex;
   align-items: baseline;
   gap: 4px;
+  flex-shrink: 0;
 }
 
 .party-count {

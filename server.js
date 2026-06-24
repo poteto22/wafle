@@ -11,6 +11,9 @@ const PORT = process.env.PORT || 3005;
 // Serve static assets from public/
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Serve party logos from src/image/
+app.use('/image', express.static(path.join(__dirname, 'src/image')));
+
 // Proxy endpoint to bypass CORS issues in frontend browser fetch
 app.get('/api/waffle', async (req, res) => {
   try {

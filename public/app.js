@@ -44,6 +44,7 @@ function initializeGrid() {
     // Initialize state cache
     cellsState[i] = { party: 'ว่าง', color: '#cbd5e1' };
     cell.style.backgroundColor = cellsState[i].color;
+    cell.style.setProperty('--cell-color', cellsState[i].color);
     waffleGrid.appendChild(cell);
   }
 }
@@ -151,6 +152,7 @@ function updateWaffleChart(data) {
     if (!prevCell || prevCell.party !== newCell.party || prevCell.color !== newCell.color) {
       // Set colors
       cellEl.style.backgroundColor = newCell.color;
+      cellEl.style.setProperty('--cell-color', newCell.color);
       
       // Set custom property for flash color so the glow matches the party's color
       cellEl.style.setProperty('--flash-color', newCell.color);
@@ -171,6 +173,15 @@ function updateWaffleChart(data) {
     }
   }
 }
+
+// Fallback for missing party logo images
+function handleLogoError(imgEl, fallbackColor) {
+  const container = imgEl.parentElement;
+  if (container) {
+    container.innerHTML = `<div class="party-logo-fallback" style="background-color: ${fallbackColor}; width: 100%; height: 100%; border-radius: 50%;"></div>`;
+  }
+}
+window.handleLogoError = handleLogoError;
 
 // Dynamically generate and update the party legend list on the right
 function updatePartyList(data) {
@@ -193,10 +204,12 @@ function updatePartyList(data) {
       itemEl.id = `party-item-${index}`;
       
       itemEl.innerHTML = `
-        <div class="party-color-dot" style="background-color: ${party.colorCode || '#cccccc'}"></div>
+        <div class="party-logo-container" id="party-logo-container-${index}">
+          <img class="party-logo" src="/image/${encodeURIComponent(party.party)}.jpg" alt="${party.party}" onerror="handleLogoError(this, '${party.colorCode || '#cccccc'}')">
+        </div>
         <div class="party-info">
           <div class="party-name-row">
-            <span class="party-name">${party.party}</span>
+            <span class="party-name" id="party-name-${index}">${party.party}</span>
             <div class="party-stats">
               <span class="party-count" id="party-count-${index}">${party.count}</span>
               <span class="party-seats-label">ที่นั่ง</span>
@@ -217,13 +230,24 @@ function updatePartyList(data) {
     // If the list is already drawn, update the counts, labels, and bars smoothly
     sortedData.forEach((party, index) => {
       const prevCount = partiesState[party.party];
-      const countEl = document.getElementById(`party-count-${index}`);
-      const pctEl = document.getElementById(`party-pct-${index}`);
-      const barEl = document.getElementById(`party-bar-${index}`);
+      const countEl = document.getElementById('party-count-' + index);
+      const pctEl = document.getElementById('party-pct-' + index);
+      const barEl = document.getElementById('party-bar-' + index);
+      const nameEl = document.getElementById('party-name-' + index);
+      const logoContainerEl = document.getElementById('party-logo-container-' + index);
 
       if (countEl && pctEl && barEl) {
         const percentage = ((party.count / totalSeats) * 100).toFixed(1);
         
+        // If the party at this rank has changed, update its name, logo, and bar color
+        if (nameEl && nameEl.textContent !== party.party) {
+          nameEl.textContent = party.party;
+          if (logoContainerEl) {
+            logoContainerEl.innerHTML = `<img class="party-logo" src="/image/${encodeURIComponent(party.party)}.jpg" alt="${party.party}" onerror="handleLogoError(this, '${party.colorCode || '#cccccc'}')">`;
+          }
+          barEl.style.backgroundColor = party.colorCode || '#cccccc';
+        }
+
         // If count has changed, trigger a text pulse animation
         if (prevCount !== party.count) {
           countEl.textContent = party.count;
