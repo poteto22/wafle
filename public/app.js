@@ -32,6 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Start the countdown timer loop
   startCountdown();
+
+  // Initialize fullscreen button functionality
+  setupFullscreen();
 });
 
 // Create 50 cell elements arranged in a hemicycle (semicircular parliament layout)
@@ -340,3 +343,38 @@ function setMode(mode) {
 
 // Make setMode globally accessible
 window.setMode = setMode;
+
+// Setup floating fullscreen toggle button functionality
+function setupFullscreen() {
+  const btn = document.getElementById('fullscreen-btn');
+  if (!btn) return;
+
+  btn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable fullscreen mode: ${err.message} (${err.name})`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  });
+
+  // Keep svg icon inside button in sync with fullscreen state
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement) {
+      btn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M10 9H5v2h5v5h2v-7H10zm4 0h5v2h-5v5h-2v-7h2z"/>
+        </svg>
+      `;
+      btn.title = "Exit Fullscreen";
+    } else {
+      btn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M5 5h5v2H7v3H5V5zm14 0h-5v2h3v3h2V5zM5 19h5v-2H7v-3H5v5zm14 0h-5v-2h3v-3h2v5z"/>
+        </svg>
+      `;
+      btn.title = "Enter Fullscreen";
+    }
+  });
+}
