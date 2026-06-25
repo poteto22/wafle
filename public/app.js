@@ -248,76 +248,79 @@ window.handleLogoError = handleLogoError;
 
 // Dynamically generate and update the party legend list on the right
 function updatePartyList(data) {
+  // Clear loading spinner if it exists
+  const loadingSpinner = document.getElementById('loading-spinner');
+  if (loadingSpinner) {
+    loadingSpinner.remove();
+  }
+
   // Sum total seats from data to calculate percentage accurately
   const totalSeats = data.reduce((acc, curr) => acc + (parseInt(curr.count) || 0), 0) || 50;
   
   // Sort data descending by seat count
   const sortedData = [...data].sort((a, b) => (parseInt(b.count) || 0) - (parseInt(a.count) || 0));
 
-  // Check if we need to regenerate HTML or just update values
-  const hasItems = partyList.querySelectorAll('.party-item').length > 0;
+  // 1. Remove parties that are no longer present in the new data
+  const newPartyNames = new Set(sortedData.map(p => p.party));
+  partyList.querySelectorAll('.party-item').forEach(itemEl => {
+    const partyName = itemEl.getAttribute('data-party');
+    if (!newPartyNames.has(partyName)) {
+      itemEl.remove();
+    }
+  });
 
-  if (!hasItems) {
-    partyList.innerHTML = '';
-    sortedData.forEach((party, index) => {
-      const percentage = ((party.count / totalSeats) * 100).toFixed(1);
-      
-      const itemEl = document.createElement('div');
+  // 2. Add or update existing parties in sorted order
+  sortedData.forEach((party, index) => {
+    const percentage = ((party.count / totalSeats) * 100).toFixed(1);
+    let itemEl = partyList.querySelector(`.party-item[data-party="${party.party}"]`);
+    const prevCount = partiesState[party.party];
+
+    if (!itemEl) {
+      // Create new element if it doesn't exist
+      itemEl = document.createElement('div');
       itemEl.className = 'party-item';
-      itemEl.id = `party-item-${index}`;
+      itemEl.setAttribute('data-party', party.party);
       
       // Make the entire card item clickable to view candidates list
       itemEl.style.cursor = 'pointer';
       itemEl.addEventListener('click', () => {
-        const nameEl = document.getElementById(`party-name-${index}`);
-        if (nameEl) {
-          showCandidateCard(nameEl.textContent);
-        }
+        showCandidateCard(party.party);
       });
       
       itemEl.innerHTML = `
-        <div class="party-logo-container" id="party-logo-container-${index}">
+        <div class="party-logo-container">
           <img class="party-logo" src="/image/${encodeURIComponent(party.party)}.jpg" alt="${party.party}" onerror="handleLogoError(this, '${party.colorCode || '#cccccc'}')">
         </div>
         <div class="party-info">
           <div class="party-name-row">
-            <span class="party-name" id="party-name-${index}">${party.party}</span>
+            <span class="party-name">${party.party}</span>
             <div class="party-stats">
-              <span class="party-count" id="party-count-${index}">${party.count}</span>
+              <span class="party-count">${party.count}</span>
               <span class="party-seats-label">ที่นั่ง</span>
             </div>
           </div>
           <div class="party-progress-track">
-            <div class="party-progress-fill" id="party-bar-${index}" style="background-color: ${party.colorCode || '#cccccc'}; width: ${percentage}%"></div>
+            <div class="party-progress-fill" style="background-color: ${party.colorCode || '#cccccc'}; width: 0%"></div>
           </div>
         </div>
       `;
+      
+      // Append to the list
       partyList.appendChild(itemEl);
       
-      // Save initial count to state cache
+      // Trigger a small delay so progress bar width transitions nicely from 0 to target
+      setTimeout(() => {
+        const bar = itemEl.querySelector('.party-progress-fill');
+        if (bar) bar.style.width = `${percentage}%`;
+      }, 50);
+
       partiesState[party.party] = party.count;
-    });
-  } else {
-    // If the list is already drawn, update the counts, labels, and bars smoothly
-    sortedData.forEach((party, index) => {
-      const prevCount = partiesState[party.party];
-      const countEl = document.getElementById('party-count-' + index);
-      const barEl = document.getElementById('party-bar-' + index);
-      const nameEl = document.getElementById('party-name-' + index);
-      const logoContainerEl = document.getElementById('party-logo-container-' + index);
-
-      if (countEl && barEl) {
-        const percentage = ((party.count / totalSeats) * 100).toFixed(1);
-        
-        // If the party at this rank has changed, update its name, logo, and bar color
-        if (nameEl && nameEl.textContent !== party.party) {
-          nameEl.textContent = party.party;
-          if (logoContainerEl) {
-            logoContainerEl.innerHTML = `<img class="party-logo" src="/image/${encodeURIComponent(party.party)}.jpg" alt="${party.party}" onerror="handleLogoError(this, '${party.colorCode || '#cccccc'}')">`;
-          }
-          barEl.style.backgroundColor = party.colorCode || '#cccccc';
-        }
-
+    } else {
+      // Update existing element
+      const countEl = itemEl.querySelector('.party-count');
+      const barEl = itemEl.querySelector('.party-progress-fill');
+      
+      if (countEl) {
         // If count has changed, trigger a text pulse animation
         if (prevCount !== party.count) {
           countEl.textContent = party.count;
@@ -331,11 +334,17 @@ function updatePartyList(data) {
 
           partiesState[party.party] = party.count;
         }
-        
-        barEl.style.width = `${percentage}%`;
       }
-    });
-  }
+
+      if (barEl) {
+        barEl.style.width = `${percentage}%`;
+        barEl.style.backgroundColor = party.colorCode || '#cccccc';
+      }
+    }
+
+    // Append element (moves it to the correct sorted position at the end of parent)
+    partyList.appendChild(itemEl);
+  });
 }
 
 // Helper to format/display current sync time
