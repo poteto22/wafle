@@ -580,8 +580,8 @@ body {
 .popup-content {
   position: relative;
   width: 90%;
-  max-width: 580px;
-  max-height: 80vh;
+  max-width: 900px;
+  max-height: 90vh;
   background: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
@@ -642,8 +642,8 @@ body {
 }
 
 .popup-party-logo {
-  width: 52px;
-  height: 52px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   object-fit: cover;
   border: 1.5px solid rgba(255, 255, 255, 0.5);
@@ -651,7 +651,7 @@ body {
 }
 
 .popup-title {
-  font-size: clamp(1.2rem, 2.5vh, 1.5rem);
+  font-size: clamp(1.4rem, 3vh, 2rem);
   font-weight: 600;
   color: var(--text-main);
   font-family: 'Kanit', sans-serif;
@@ -660,10 +660,10 @@ body {
 .popup-body {
   padding: 20px 28px 28px;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
-  max-height: 58vh;
+  max-height: 65vh;
 }
 
 /* Custom Scrollbar for Popup Body */
@@ -706,8 +706,8 @@ body {
 }
 
 .candidate-avatar {
-  width: 60px;
-  height: 60px;
+  width: 85px;
+  height: 85px;
   border-radius: 14px;
   object-fit: cover;
   border: 1.5px solid rgba(255, 255, 255, 0.5);
@@ -722,7 +722,7 @@ body {
 }
 
 .candidate-name-field {
-  font-size: clamp(1rem, 2vh, 1.2rem);
+  font-size: clamp(1.2rem, 2.5vh, 1.6rem);
   font-weight: 600;
   color: var(--text-main);
   font-family: 'Kanit', sans-serif;
@@ -732,7 +732,7 @@ body {
 .candidate-meta-row {
   display: flex;
   gap: 14px;
-  font-size: clamp(0.9rem, 1.8vh, 1.1rem);
+  font-size: clamp(1rem, 2vh, 1.3rem);
   color: rgba(0, 0, 0, 0.8);
   font-weight: 300;
 }
@@ -746,7 +746,7 @@ body {
   display: flex;
   align-items: baseline;
   gap: 6px;
-  font-size: clamp(0.9rem, 1.8vh, 1.1rem);
+  font-size: clamp(1rem, 2vh, 1.3rem);
 }
 
 .candidate-score-val {
@@ -756,7 +756,7 @@ body {
 }
 
 .candidate-score-pct {
-  font-size: clamp(0.75rem, 1.5vh, 0.9rem);
+  font-size: clamp(0.85rem, 1.7vh, 1.1rem);
   color: var(--text-muted);
   font-weight: 500;
   font-family: 'Inter', sans-serif;
@@ -764,6 +764,7 @@ body {
 
 /* Loading, Error and Empty states */
 .popup-loading, .popup-no-data, .popup-error {
+  grid-column: span 2;
   padding: 50px 20px;
   text-align: center;
   font-size: clamp(1rem, 2vh, 1.25rem);

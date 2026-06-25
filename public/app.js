@@ -438,6 +438,9 @@ async function showCandidateCard(partyName) {
       return;
     }
 
+    // Sort candidates by score descending (จากมากไปน้อย)
+    candidates.sort((a, b) => Number(b.score) - Number(a.score));
+
     // Render candidate cards
     popupBody.innerHTML = candidates.map(c => {
       // Extract only the filename from Windows/Unix path (supporting both 'pic' and 'candidateImageUrl' keys)
