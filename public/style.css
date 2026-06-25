@@ -8,8 +8,8 @@
   --accent-color: #0284c7;
   
   /* TV Mode variables (Dynamic & scalable) */
-  --cell-size: clamp(22px, 5.5vh, 55px);
-  --cell-gap: clamp(8px, 1.6vh, 18px);
+  --cell-size: clamp(50px, 6vh, 60px);
+  --cell-gap: clamp(12px, 1.6vh, 18px);
   --cell-radius: 50%;
 }
 
@@ -773,4 +773,9 @@ body {
 
 .popup-error {
   color: #ef4444;
+}
+
+/* Custom subtle white circle cursor for fullscreen mode */
+:fullscreen, :fullscreen * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 16 16%22%3E%3Ccircle cx=%228%22 cy=%228%22 r=%223.5%22 fill=%22white%22 fill-opacity=%220.2%22 stroke=%22white%22 stroke-opacity=%220.35%22 stroke-width=%221%22/%3E%3C/svg%3E") 8 8, auto !important;
 }
