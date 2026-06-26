@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Create 50 cell elements arranged in a hemicycle (semicircular parliament layout)
 function initializeGrid() {
   waffleGrid.innerHTML = '';
-  
+
   // Generate all 50 cell positions across 3 concentric rows
   const cells = [];
   const rowsConfig = [
@@ -62,7 +62,7 @@ function initializeGrid() {
 
       const startAngle = (startDeg * Math.PI) / 180;
       const endAngle = (endDeg * Math.PI) / 180;
-const angle = startAngle - (i / (K - 1)) * (startAngle - endAngle);
+      const angle = startAngle - (i / (K - 1)) * (startAngle - endAngle);
 
       cells.push({
         rowIndex,
@@ -84,18 +84,18 @@ const angle = startAngle - (i / (K - 1)) * (startAngle - endAngle);
   cells.forEach((cellData, index) => {
     const angle = cellData.angle;
     const R = cellData.radius;
-    
+
     // Convert polar coordinates to Cartesian percentages
     // Multiply by 1/1.8 to counteract aspect-ratio stretching
     const x = 50 + (1 / 1.8) * R * Math.cos(angle);
     const y = 60 - R * Math.sin(angle);
-    
+
     const cell = document.createElement('div');
     cell.className = 'cell';
     cell.id = `cell-${index}`;
     cell.style.left = `${x}%`;
     cell.style.top = `${y}%`;
-    
+
     // Add click handler to fetch and show candidate card popup
     cell.addEventListener('click', () => {
       const state = cellsState[index];
@@ -103,7 +103,7 @@ const angle = startAngle - (i / (K - 1)) * (startAngle - endAngle);
         showCandidateCard(state.party);
       }
     });
-    
+
     // Initialize state cache
     cellsState[index] = { party: 'ว่าง', color: '#cbd5e1', x, y };
     cell.style.backgroundColor = cellsState[index].color;
@@ -143,7 +143,7 @@ function updateCountdownUI() {
 async function fetchData() {
   if (isFetching) return;
   isFetching = true;
-  
+
   // Visual loading feedback (subtle pulse on live dot)
   if (liveDot) {
     liveDot.style.backgroundColor = '#f59e0b';
@@ -156,12 +156,12 @@ async function fetchData() {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     const data = await response.json();
-    
+
     // Process and render data
     updateWaffleChart(data);
     updatePartyList(data);
     updateLastSyncTime();
-    
+
     // Restore LIVE color
     if (liveDot) {
       liveDot.style.backgroundColor = '#ef4444';
@@ -184,12 +184,12 @@ async function fetchData() {
 function updateWaffleChart(data) {
   // Construct the new list of 50 cells based on party seat allocations
   const newCellsAllocation = [];
-  
+
   data.forEach(item => {
     const count = parseInt(item.count) || 0;
     const color = item.colorCode || '#ddddcc';
     const partyName = item.party || 'ไม่ระบุ';
-    
+
     for (let s = 0; s < count; s++) {
       newCellsAllocation.push({ party: partyName, color: color });
     }
@@ -216,10 +216,10 @@ function updateWaffleChart(data) {
       // Set colors
       cellEl.style.backgroundColor = newCell.color;
       cellEl.style.setProperty('--cell-color', newCell.color);
-      
+
       // Set custom property for flash color so the glow matches the party's color
       cellEl.style.setProperty('--flash-color', newCell.color);
-      
+
       // Apply CSS flash class
       cellEl.classList.remove('flash-update');
       // Trigger reflow to restart animation if it was already playing
@@ -256,7 +256,7 @@ function updatePartyList(data) {
 
   // Sum total seats from data to calculate percentage accurately
   const totalSeats = data.reduce((acc, curr) => acc + (parseInt(curr.count) || 0), 0) || 50;
-  
+
   // Sort data descending by seat count
   const sortedData = [...data].sort((a, b) => (parseInt(b.count) || 0) - (parseInt(a.count) || 0));
 
@@ -280,13 +280,13 @@ function updatePartyList(data) {
       itemEl = document.createElement('div');
       itemEl.className = 'party-item';
       itemEl.setAttribute('data-party', party.party);
-      
+
       // Make the entire card item clickable to view candidates list
       itemEl.style.cursor = 'pointer';
       itemEl.addEventListener('click', () => {
         showCandidateCard(party.party);
       });
-      
+
       itemEl.innerHTML = `
         <div class="party-logo-container">
           <img class="party-logo" src="/image/${encodeURIComponent(party.party)}.jpg" alt="${party.party}" onerror="handleLogoError(this, '${party.colorCode || '#cccccc'}')">
@@ -304,10 +304,10 @@ function updatePartyList(data) {
           </div>
         </div>
       `;
-      
+
       // Append to the list
       partyList.appendChild(itemEl);
-      
+
       // Trigger a small delay so progress bar width transitions nicely from 0 to target
       setTimeout(() => {
         const bar = itemEl.querySelector('.party-progress-fill');
@@ -319,7 +319,7 @@ function updatePartyList(data) {
       // Update existing element
       const countEl = itemEl.querySelector('.party-count');
       const barEl = itemEl.querySelector('.party-progress-fill');
-      
+
       if (countEl) {
         // If count has changed, trigger a text pulse animation
         if (prevCount !== party.count) {
@@ -327,7 +327,7 @@ function updatePartyList(data) {
           countEl.classList.remove('updated');
           void countEl.offsetWidth; // trigger reflow
           countEl.classList.add('updated');
-          
+
           countEl.addEventListener('animationend', () => {
             countEl.classList.remove('updated');
           }, { once: true });
@@ -424,7 +424,7 @@ async function showCandidateCard(partyName) {
   if (!modal || !popupBody || !popupTitle) return;
 
   // Show modal in loading state
-  popupTitle.textContent = `ผู้สมัคร - ${partyName}`;
+  popupTitle.textContent = `ว่าที่สมาชิกสภากทม. - ${partyName}`;
   popupLogo.src = `/image/${encodeURIComponent(partyName)}.jpg`;
   popupLogo.style.display = 'block';
   popupBody.innerHTML = '<div class="popup-loading">กำลังโหลดข้อมูลผู้สมัคร...</div>';
@@ -456,7 +456,7 @@ async function showCandidateCard(partyName) {
       const imgPath = c.pic || c.candidateImageUrl;
       const imgFilename = imgPath ? imgPath.split(/[\\/]/).pop() : 'default.png';
       const localImgSrc = `/candidates/${encodeURIComponent(imgFilename)}`;
-      
+
       return `
         <div class="candidate-row-card">
           <img class="candidate-avatar" src="${localImgSrc}" alt="${c.candidateName}" onerror="this.src='https://asset-election.nationtv.tv/2026/candidates/default.png'; this.onerror=null;">
@@ -492,7 +492,7 @@ function setupModalListeners() {
 
   if (overlay) overlay.addEventListener('click', closeModal);
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
-  
+
   // Close on ESC key press
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeModal();
